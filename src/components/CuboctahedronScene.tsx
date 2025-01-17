@@ -82,12 +82,20 @@ const CuboctahedronScene = () => {
       4, 7, 6,    6, 7, 5     // Bottom square
     ];
 
-    // Calculate face normals ensuring they point outward
+    // Manual normal overrides for specific faces
+    const manualNormals: { [key: number]: THREE.Vector3 } = {
+      // Example: Override normal for first triangle (indices 0,1,2)
+      0: new THREE.Vector3(1, 1, 1).normalize(),
+      // Add more manual overrides as needed
+    };
+
+    // Calculate face normals with manual overrides
     const normalsArray = new Float32Array(vertices.length * 3);
     const center = new THREE.Vector3(0, 0, 0);
     
     // Process each triangle face
     for (let i = 0; i < indices.length; i += 3) {
+      const faceIndex = i / 3;
       const idx1 = indices[i];
       const idx2 = indices[i + 1];
       const idx3 = indices[i + 2];
@@ -96,26 +104,33 @@ const CuboctahedronScene = () => {
       const v2 = vertices[idx2];
       const v3 = vertices[idx3];
 
-      // Calculate face normal using cross product
-      const edge1 = new THREE.Vector3().subVectors(v2, v1);
-      const edge2 = new THREE.Vector3().subVectors(v3, v1);
-      const normal = new THREE.Vector3().crossVectors(edge1, edge2).normalize();
+      let normal: THREE.Vector3;
 
-      // Calculate face center
-      const faceCenter = new THREE.Vector3()
-        .addVectors(v1, v2)
-        .add(v3)
-        .multiplyScalar(1/3);
+      if (manualNormals[faceIndex]) {
+        // Use manual override if specified
+        normal = manualNormals[faceIndex].clone();
+      } else {
+        // Calculate normal using cross product
+        const edge1 = new THREE.Vector3().subVectors(v2, v1);
+        const edge2 = new THREE.Vector3().subVectors(v3, v1);
+        normal = new THREE.Vector3().crossVectors(edge1, edge2).normalize();
 
-      // Get direction from overall center to face center
-      const directionToCenter = new THREE.Vector3()
-        .subVectors(faceCenter, center)
-        .normalize();
+        // Calculate face center
+        const faceCenter = new THREE.Vector3()
+          .addVectors(v1, v2)
+          .add(v3)
+          .multiplyScalar(1/3);
 
-      // If normal is pointing inward (dot product with direction to center is negative)
-      // then flip it
-      if (normal.dot(directionToCenter) < 0) {
-        normal.multiplyScalar(-1);
+        // Get direction from overall center to face center
+        const directionToCenter = new THREE.Vector3()
+          .subVectors(faceCenter, center)
+          .normalize();
+
+        // If normal is pointing inward (dot product with direction to center is negative)
+        // then flip it
+        if (normal.dot(directionToCenter) < 0) {
+          normal.multiplyScalar(-1);
+        }
       }
 
       // Apply the same normal to all three vertices of this face
