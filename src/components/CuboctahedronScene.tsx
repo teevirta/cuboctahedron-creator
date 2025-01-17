@@ -82,8 +82,9 @@ const CuboctahedronScene = () => {
       4, 7, 6,    6, 7, 5     // Bottom square
     ];
 
-    // Calculate face normals
+    // Calculate face normals ensuring they point outward
     const normalsArray = new Float32Array(vertices.length * 3);
+    const center = new THREE.Vector3(0, 0, 0);
     
     // Process each triangle face
     for (let i = 0; i < indices.length; i += 3) {
@@ -99,6 +100,23 @@ const CuboctahedronScene = () => {
       const edge1 = new THREE.Vector3().subVectors(v2, v1);
       const edge2 = new THREE.Vector3().subVectors(v3, v1);
       const normal = new THREE.Vector3().crossVectors(edge1, edge2).normalize();
+
+      // Calculate face center
+      const faceCenter = new THREE.Vector3()
+        .addVectors(v1, v2)
+        .add(v3)
+        .multiplyScalar(1/3);
+
+      // Get direction from overall center to face center
+      const directionToCenter = new THREE.Vector3()
+        .subVectors(faceCenter, center)
+        .normalize();
+
+      // If normal is pointing inward (dot product with direction to center is negative)
+      // then flip it
+      if (normal.dot(directionToCenter) < 0) {
+        normal.multiplyScalar(-1);
+      }
 
       // Apply the same normal to all three vertices of this face
       [idx1, idx2, idx3].forEach(idx => {
