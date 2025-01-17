@@ -57,21 +57,21 @@ const CuboctahedronScene = () => {
       new THREE.Vector3(-1, 0, -1),  // 11
     ];
 
-    // Define faces (indices)
+    // Define faces (indices) with correct winding order
     const indices = [
-      // Top triangular faces
-      0, 2, 8,    1, 9, 2,    3, 10, 0,    1, 3, 11,
+      // Top triangular faces (counter-clockwise from outside)
+      0, 8, 2,    1, 2, 9,    3, 0, 10,    1, 11, 3,
       
-      // Bottom triangular faces
-      4, 8, 6,    5, 6, 9,    7, 5, 11,    4, 10, 7,
+      // Bottom triangular faces (counter-clockwise from outside)
+      4, 6, 8,    5, 9, 6,    7, 11, 5,    4, 7, 10,
       
-      // Middle square faces
-      8, 0, 10, 10, 4, 8,     // Right square
-      9, 1, 11, 11, 5, 9,     // Left square
-      2, 9, 6, 6, 8, 2,       // Front square
-      3, 1, 11, 11, 7, 3,     // Back square
-      0, 3, 10, 10, 0, 3,     // Top square
-      4, 7, 5, 5, 6, 4        // Bottom square
+      // Middle square faces (counter-clockwise from outside)
+      8, 4, 10,   10, 0, 8,     // Right square
+      9, 11, 1,   11, 9, 5,     // Left square
+      2, 6, 9,    6, 2, 8,      // Front square
+      3, 11, 1,   11, 3, 7,     // Back square
+      0, 10, 3,   10, 0, 3,     // Top square
+      4, 5, 7,    5, 4, 6       // Bottom square
     ];
 
     // Convert vertices to flat array
@@ -164,7 +164,6 @@ const CuboctahedronScene = () => {
 
     animate();
 
-    // Cleanup
     return () => {
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('mousemove', handleMouseMove);
