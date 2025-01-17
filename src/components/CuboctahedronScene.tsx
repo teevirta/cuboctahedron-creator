@@ -77,7 +77,7 @@ const CuboctahedronScene = () => {
       8, 0, 10,   10, 4, 8,   // Right square
       9, 1, 11,   11, 5, 9,   // Left square
       8, 6, 2,    2, 8, 9,    // Front square
-      3, 10, 7,   3, 11, 7,   // Back square (faces 16 and 17 inverted)
+      3, 10, 7,   11, 3, 7,   // Back square (faces 16 and 17 inverted)
       0, 2, 3,    3, 2, 1,    // Top square
       4, 7, 6,    6, 7, 5     // Bottom square
     ];
