@@ -146,15 +146,69 @@ const CuboctahedronScene = () => {
     geometry.setAttribute('normal', new THREE.BufferAttribute(normalsArray, 3));
     geometry.setIndex(indices);
 
-    const material = new THREE.MeshPhongMaterial({
-      color: 0x4A90E2,
-      shininess: 100,
-      specular: 0x4A90E2,
-      flatShading: true,
-    });
+    // Colors for each face
+    const colors = [
+      '#9b87f5', // Face 0 - Primary Purple
+      '#7E69AB', // Face 1 - Secondary Purple
+      '#6E59A5', // Face 2 - Tertiary Purple
+      '#F2FCE2', // Face 3 - Soft Green
+      '#FEF7CD', // Face 4 - Soft Yellow
+      '#FEC6A1', // Face 5 - Soft Orange
+      '#E5DEFF', // Face 6 - Soft Purple
+      '#FFDEE2', // Face 7 - Soft Pink
+      '#FDE1D3', // Face 8 - Soft Peach
+      '#D3E4FD', // Face 9 - Soft Blue
+      '#F1F0FB', // Face 10 - Soft Gray
+      '#8B5CF6', // Face 11 - Vivid Purple
+      '#D946EF', // Face 12 - Magenta Pink
+      '#F97316', // Face 13 - Bright Orange
+      '#0EA5E9', // Face 14 - Ocean Blue
+      '#1EAEDB', // Face 15 - Bright Blue
+      '#33C3F0', // Face 16 - Sky Blue
+      '#0FA0CE', // Face 17 - Bright Blue
+      '#888888', // Face 18 - Gray
+      '#F1F1F1'  // Face 19 - Light Gray
+    ];
 
-    const cuboctahedron = new THREE.Mesh(geometry, material);
-    scene.add(cuboctahedron);
+    // Create materials array
+    const materials = colors.map(color => 
+      new THREE.MeshPhongMaterial({
+        color: new THREE.Color(color),
+        shininess: 100,
+        specular: 0x4A90E2,
+        flatShading: true,
+      })
+    );
+
+    // Instead of creating a single mesh, create a group of meshes
+    const cuboctahedronGroup = new THREE.Group();
+
+    // Create individual meshes for each face
+    for (let i = 0; i < indices.length; i += 3) {
+      const faceGeometry = new THREE.BufferGeometry();
+      const faceVertices = new Float32Array(9); // 3 vertices × 3 coordinates
+      const faceNormals = new Float32Array(9);
+      
+      // Get vertices for this face
+      for (let j = 0; j < 3; j++) {
+        const vertexIndex = indices[i + j];
+        faceVertices[j * 3] = verticesArray[vertexIndex * 3];
+        faceVertices[j * 3 + 1] = verticesArray[vertexIndex * 3 + 1];
+        faceVertices[j * 3 + 2] = verticesArray[vertexIndex * 3 + 2];
+        
+        faceNormals[j * 3] = normalsArray[vertexIndex * 3];
+        faceNormals[j * 3 + 1] = normalsArray[vertexIndex * 3 + 1];
+        faceNormals[j * 3 + 2] = normalsArray[vertexIndex * 3 + 2];
+      }
+      
+      faceGeometry.setAttribute('position', new THREE.BufferAttribute(faceVertices, 3));
+      faceGeometry.setAttribute('normal', new THREE.BufferAttribute(faceNormals, 3));
+      
+      const faceMesh = new THREE.Mesh(faceGeometry, materials[Math.floor(i / 3)]);
+      cuboctahedronGroup.add(faceMesh);
+    }
+
+    scene.add(cuboctahedronGroup);
 
     // Interaction state
     let isDragging = false;
@@ -175,8 +229,8 @@ const CuboctahedronScene = () => {
           y: e.clientY - previousMousePosition.y
         };
 
-        cuboctahedron.rotation.y += deltaMove.x * 0.01;
-        cuboctahedron.rotation.x += deltaMove.y * 0.01;
+        cuboctahedronGroup.rotation.y += deltaMove.x * 0.01;
+        cuboctahedronGroup.rotation.x += deltaMove.y * 0.01;
       }
 
       previousMousePosition = {
@@ -214,8 +268,8 @@ const CuboctahedronScene = () => {
       requestAnimationFrame(animate);
 
       if (!isDragging) {
-        cuboctahedron.rotation.x += 0.001;
-        cuboctahedron.rotation.y += 0.002;
+        cuboctahedronGroup.rotation.x += 0.001;
+        cuboctahedronGroup.rotation.y += 0.002;
       }
 
       renderer.render(scene, camera);
