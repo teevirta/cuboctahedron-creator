@@ -34,7 +34,7 @@ const CuboctahedronScene = () => {
     scene.add(backLight);
 
     // Create Cuboctahedron
-    const geometry = new THREE.Geometry();
+    const geometry = new THREE.BufferGeometry();
 
     // Vertices
     const phi = (1 + Math.sqrt(5)) / 2;
@@ -53,22 +53,25 @@ const CuboctahedronScene = () => {
       new THREE.Vector3(0, -phi, -1/phi),
     ];
 
-    // Add vertices to geometry
-    vertices.forEach(vertex => geometry.vertices.push(vertex));
-
-    // Add faces
-    const faces = [
-      [0, 8, 1], [0, 1, 2], [1, 3, 2], [0, 2, 4],
-      [2, 6, 4], [1, 5, 3], [3, 7, 6], [0, 4, 8],
-      [4, 10, 8], [1, 8, 5], [5, 8, 10], [3, 5, 7],
-      [5, 10, 7], [4, 6, 10], [6, 7, 10], [2, 3, 6]
+    // Define faces (indices)
+    const indices = [
+      0, 8, 1,  0, 1, 2,  1, 3, 2,  0, 2, 4,
+      2, 6, 4,  1, 5, 3,  3, 7, 6,  0, 4, 8,
+      4, 10, 8, 1, 8, 5,  5, 8, 10, 3, 5, 7,
+      5, 10, 7, 4, 6, 10, 6, 7, 10, 2, 3, 6
     ];
 
-    faces.forEach(face => {
-      geometry.faces.push(new THREE.Face3(face[0], face[1], face[2]));
+    // Convert vertices to flat array
+    const verticesArray = new Float32Array(vertices.length * 3);
+    vertices.forEach((vertex, i) => {
+      verticesArray[i * 3] = vertex.x;
+      verticesArray[i * 3 + 1] = vertex.y;
+      verticesArray[i * 3 + 2] = vertex.z;
     });
 
-    geometry.computeFaceNormals();
+    // Set attributes
+    geometry.setAttribute('position', new THREE.BufferAttribute(verticesArray, 3));
+    geometry.setIndex(indices);
     geometry.computeVertexNormals();
 
     const material = new THREE.MeshPhongMaterial({
