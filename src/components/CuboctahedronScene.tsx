@@ -36,29 +36,42 @@ const CuboctahedronScene = () => {
     // Create Cuboctahedron
     const geometry = new THREE.BufferGeometry();
 
-    // Vertices
-    const phi = (1 + Math.sqrt(5)) / 2;
+    // Vertices for a proper cuboctahedron
     const vertices = [
-      new THREE.Vector3(1, 1, 1),
-      new THREE.Vector3(-1, 1, 1),
-      new THREE.Vector3(1, -1, 1),
-      new THREE.Vector3(-1, -1, 1),
-      new THREE.Vector3(1, 1, -1),
-      new THREE.Vector3(-1, 1, -1),
-      new THREE.Vector3(1, -1, -1),
-      new THREE.Vector3(-1, -1, -1),
-      new THREE.Vector3(0, phi, 1/phi),
-      new THREE.Vector3(0, -phi, 1/phi),
-      new THREE.Vector3(0, phi, -1/phi),
-      new THREE.Vector3(0, -phi, -1/phi),
+      // Top square vertices
+      new THREE.Vector3(1, 1, 0),    // 0
+      new THREE.Vector3(-1, 1, 0),   // 1
+      new THREE.Vector3(0, 1, 1),    // 2
+      new THREE.Vector3(0, 1, -1),   // 3
+      
+      // Bottom square vertices
+      new THREE.Vector3(1, -1, 0),   // 4
+      new THREE.Vector3(-1, -1, 0),  // 5
+      new THREE.Vector3(0, -1, 1),   // 6
+      new THREE.Vector3(0, -1, -1),  // 7
+      
+      // Middle square vertices
+      new THREE.Vector3(1, 0, 1),    // 8
+      new THREE.Vector3(-1, 0, 1),   // 9
+      new THREE.Vector3(1, 0, -1),   // 10
+      new THREE.Vector3(-1, 0, -1),  // 11
     ];
 
     // Define faces (indices)
     const indices = [
-      0, 8, 1,  0, 1, 2,  1, 3, 2,  0, 2, 4,
-      2, 6, 4,  1, 5, 3,  3, 7, 6,  0, 4, 8,
-      4, 10, 8, 1, 8, 5,  5, 8, 10, 3, 5, 7,
-      5, 10, 7, 4, 6, 10, 6, 7, 10, 2, 3, 6
+      // Top triangular faces
+      0, 2, 8,    1, 9, 2,    3, 10, 0,    1, 3, 11,
+      
+      // Bottom triangular faces
+      4, 8, 6,    5, 6, 9,    7, 5, 11,    4, 10, 7,
+      
+      // Middle square faces
+      8, 0, 10, 10, 4, 8,     // Right square
+      9, 1, 11, 11, 5, 9,     // Left square
+      2, 9, 6, 6, 8, 2,       // Front square
+      3, 1, 11, 11, 7, 3,     // Back square
+      0, 3, 10, 10, 0, 3,     // Top square
+      4, 7, 5, 5, 6, 4        // Bottom square
     ];
 
     // Convert vertices to flat array
