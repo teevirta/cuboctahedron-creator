@@ -36,7 +36,7 @@ const CuboctahedronScene = () => {
     // Create Cuboctahedron
     const geometry = new THREE.BufferGeometry();
 
-    // Vertices for a proper cuboctahedron
+    // Vertices
     const vertices = [
       // Top square vertices
       new THREE.Vector3(1, 1, 0),    // 0
@@ -57,7 +57,7 @@ const CuboctahedronScene = () => {
       new THREE.Vector3(-1, 0, -1),  // 11
     ];
 
-    // Define faces (indices) with correct winding order
+    // Define faces (indices)
     const indices = [
       // Top triangular faces
       0, 8, 2,    1, 9, 2,    0, 3, 10,    1, 3, 11,
@@ -66,12 +66,12 @@ const CuboctahedronScene = () => {
       8, 4, 6,    9, 6, 5,    10, 7, 4,    11, 5, 7,
       
       // Middle square faces
-      8, 0, 10,   10, 4, 8,     // Right square
-      9, 1, 11,   11, 5, 9,     // Left square
-      8, 6, 2,    2, 8, 9,      // Front square
-      10, 3, 7,   11, 7, 3,     // Back square
-      0, 2, 3,    3, 2, 1,      // Top square
-      4, 7, 6,    6, 7, 5       // Bottom square
+      8, 0, 10,   10, 4, 8,   // Right square
+      9, 1, 11,   11, 5, 9,   // Left square
+      8, 6, 2,    2, 8, 9,    // Front square
+      10, 3, 7,   11, 7, 3,   // Back square
+      0, 2, 3,    3, 2, 1,    // Top square
+      4, 7, 6,    6, 7, 5     // Bottom square
     ];
 
     // Convert vertices to flat array
@@ -82,10 +82,20 @@ const CuboctahedronScene = () => {
       verticesArray[i * 3 + 2] = vertex.z;
     });
 
+    // Calculate and set normals manually
+    const normalsArray = new Float32Array(vertices.length * 3);
+    vertices.forEach((vertex, i) => {
+      // Normalize the vertex position to get the normal direction
+      const normal = vertex.clone().normalize();
+      normalsArray[i * 3] = normal.x;
+      normalsArray[i * 3 + 1] = normal.y;
+      normalsArray[i * 3 + 2] = normal.z;
+    });
+
     // Set attributes
     geometry.setAttribute('position', new THREE.BufferAttribute(verticesArray, 3));
+    geometry.setAttribute('normal', new THREE.BufferAttribute(normalsArray, 3));
     geometry.setIndex(indices);
-    geometry.computeVertexNormals();
 
     const material = new THREE.MeshPhongMaterial({
       color: 0x4A90E2,
