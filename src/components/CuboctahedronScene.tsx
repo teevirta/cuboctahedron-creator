@@ -180,13 +180,35 @@ const CuboctahedronScene = () => {
       })
     );
 
-    // Instead of creating a single mesh, create a group of meshes
+    // Create TextSprite function
+    const createTextSprite = (text: string) => {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (!context) return null;
+      
+      canvas.width = 64;
+      canvas.height = 64;
+      
+      context.fillStyle = 'white';
+      context.font = '48px Arial';
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(text, 32, 32);
+      
+      const texture = new THREE.CanvasTexture(canvas);
+      const spriteMaterial = new THREE.SpriteMaterial({ map: texture });
+      const sprite = new THREE.Sprite(spriteMaterial);
+      sprite.scale.set(0.3, 0.3, 1);
+      
+      return sprite;
+    };
+
     const cuboctahedronGroup = new THREE.Group();
 
     // Create individual meshes for each face
     for (let i = 0; i < indices.length; i += 3) {
       const faceGeometry = new THREE.BufferGeometry();
-      const faceVertices = new Float32Array(9); // 3 vertices × 3 coordinates
+      const faceVertices = new Float32Array(9);
       const faceNormals = new Float32Array(9);
       
       // Get vertices for this face
@@ -205,6 +227,26 @@ const CuboctahedronScene = () => {
       faceGeometry.setAttribute('normal', new THREE.BufferAttribute(faceNormals, 3));
       
       const faceMesh = new THREE.Mesh(faceGeometry, materials[Math.floor(i / 3)]);
+      
+      // Calculate face center for label placement
+      const center = new THREE.Vector3();
+      for (let j = 0; j < 3; j++) {
+        center.x += faceVertices[j * 3] / 3;
+        center.y += faceVertices[j * 3 + 1] / 3;
+        center.z += faceVertices[j * 3 + 2] / 3;
+      }
+      
+      // Create and position number label
+      const faceNumber = Math.floor(i / 3);
+      const sprite = createTextSprite(faceNumber.toString());
+      if (sprite) {
+        sprite.position.copy(center);
+        // Move sprite slightly out from the face along its normal
+        const normal = new THREE.Vector3(faceNormals[0], faceNormals[1], faceNormals[2]);
+        sprite.position.add(normal.multiplyScalar(0.1));
+        cuboctahedronGroup.add(sprite);
+      }
+      
       cuboctahedronGroup.add(faceMesh);
     }
 
