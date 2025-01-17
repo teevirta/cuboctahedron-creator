@@ -60,18 +60,18 @@ const CuboctahedronScene = () => {
     // Define faces (indices) with correct winding order
     const indices = [
       // Top triangular faces
-      2, 0, 8,    2, 1, 9,    3, 10, 0,    3, 11, 1,
+      0, 8, 2,    1, 9, 2,    0, 3, 10,    1, 3, 11,
       
       // Bottom triangular faces
-      6, 4, 8,    6, 9, 5,    7, 5, 11,    7, 10, 4,
+      8, 4, 6,    9, 6, 5,    10, 7, 4,    11, 5, 7,
       
       // Middle square faces
-      4, 8, 0,    0, 10, 4,     // Right square
-      1, 9, 5,    5, 11, 1,     // Left square
-      8, 6, 2,    2, 9, 8,      // Front square
-      3, 7, 11,   11, 1, 3,     // Back square
-      0, 3, 2,    2, 3, 0,      // Top square
-      4, 7, 5,    5, 6, 4       // Bottom square
+      8, 0, 10,   10, 4, 8,     // Right square
+      9, 1, 11,   11, 5, 9,     // Left square
+      8, 6, 2,    2, 8, 9,      // Front square
+      10, 3, 7,   11, 7, 3,     // Back square
+      0, 2, 3,    3, 2, 1,      // Top square
+      4, 7, 6,    6, 7, 5       // Bottom square
     ];
 
     // Convert vertices to flat array
