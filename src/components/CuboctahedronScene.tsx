@@ -82,11 +82,33 @@ const CuboctahedronScene = () => {
       verticesArray[i * 3 + 2] = vertex.z;
     });
 
-    // Calculate and set normals manually
-    const normalsArray = new Float32Array(vertices.length * 3);
-    vertices.forEach((vertex, i) => {
-      // Normalize the vertex position to get the normal direction
-      const normal = vertex.clone().normalize();
+    // Define custom normals for each vertex
+    const normals = [
+      // Top square vertices normals (pointing up and outward)
+      new THREE.Vector3(0.7, 0.7, 0),    // 0
+      new THREE.Vector3(-0.7, 0.7, 0),   // 1
+      new THREE.Vector3(0, 0.7, 0.7),    // 2
+      new THREE.Vector3(0, 0.7, -0.7),   // 3
+      
+      // Bottom square vertices normals (pointing down and outward)
+      new THREE.Vector3(0.7, -0.7, 0),   // 4
+      new THREE.Vector3(-0.7, -0.7, 0),  // 5
+      new THREE.Vector3(0, -0.7, 0.7),   // 6
+      new THREE.Vector3(0, -0.7, -0.7),  // 7
+      
+      // Middle square vertices normals (pointing outward)
+      new THREE.Vector3(0.7, 0, 0.7),    // 8
+      new THREE.Vector3(-0.7, 0, 0.7),   // 9
+      new THREE.Vector3(0.7, 0, -0.7),   // 10
+      new THREE.Vector3(-0.7, 0, -0.7),  // 11
+    ];
+
+    // Normalize all normals
+    normals.forEach(normal => normal.normalize());
+
+    // Convert normals to flat array
+    const normalsArray = new Float32Array(normals.length * 3);
+    normals.forEach((normal, i) => {
       normalsArray[i * 3] = normal.x;
       normalsArray[i * 3 + 1] = normal.y;
       normalsArray[i * 3 + 2] = normal.z;
