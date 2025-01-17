@@ -32,21 +32,21 @@ export const createCuboctahedronGeometry = () => {
     verticesArray[i * 3 + 2] = vertex.z;
   });
 
-  // Define faces (indices)
+  // Define faces (indices) - All faces oriented outward
   const indices = [
     // Top triangular faces
-    0, 8, 2,    1, 9, 2,    0, 3, 10,    1, 3, 11,
+    2, 8, 0,    2, 9, 1,    3, 0, 10,    3, 1, 11,
     
     // Bottom triangular faces
-    8, 4, 6,    9, 6, 5,    10, 7, 4,    11, 5, 7,
+    6, 4, 8,    6, 5, 9,    7, 4, 10,    7, 5, 11,
     
     // Middle square faces (split into triangles)
-    8, 0, 10,   10, 4, 8,   // Right square
-    9, 1, 11,   11, 5, 9,   // Left square
-    8, 2, 6,    2, 8, 9,    // Front square (face 6 inverted)
-    3, 10, 7,   11, 3, 7,   // Back square (faces 16 and 17 inverted)
-    0, 2, 3,    3, 2, 1,    // Top square
-    4, 7, 6,    6, 7, 5     // Bottom square
+    10, 0, 8,   8, 4, 10,   // Right square
+    11, 1, 9,   9, 5, 11,   // Left square
+    8, 2, 9,    9, 6, 8,    // Front square
+    10, 3, 11,  11, 7, 10,  // Back square
+    2, 0, 1,    3, 1, 0,    // Top square
+    6, 7, 4,    7, 5, 6     // Bottom square
   ];
 
   geometry.setAttribute('position', new THREE.BufferAttribute(verticesArray, 3));
