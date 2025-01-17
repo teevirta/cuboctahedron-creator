@@ -57,23 +57,6 @@ const CuboctahedronScene = () => {
       new THREE.Vector3(-1, 0, -1),  // 11
     ];
 
-    // Define faces (indices)
-    const indices = [
-      // Top triangular faces
-      0, 8, 2,    1, 9, 2,    0, 3, 10,    1, 3, 11,
-      
-      // Bottom triangular faces
-      8, 4, 6,    9, 6, 5,    10, 7, 4,    11, 5, 7,
-      
-      // Middle square faces
-      8, 0, 10,   10, 4, 8,   // Right square
-      9, 1, 11,   11, 5, 9,   // Left square
-      8, 6, 2,    2, 8, 9,    // Front square
-      10, 3, 7,   11, 7, 3,   // Back square
-      0, 2, 3,    3, 2, 1,    // Top square
-      4, 7, 6,    6, 7, 5     // Bottom square
-    ];
-
     // Convert vertices to flat array
     const verticesArray = new Float32Array(vertices.length * 3);
     vertices.forEach((vertex, i) => {
@@ -82,37 +65,48 @@ const CuboctahedronScene = () => {
       verticesArray[i * 3 + 2] = vertex.z;
     });
 
-    // Define custom normals for each vertex
-    const normals = [
-      // Top square vertices normals (pointing up and outward)
-      new THREE.Vector3(0.7, 0.7, 0),    // 0
-      new THREE.Vector3(-0.7, 0.7, 0),   // 1
-      new THREE.Vector3(0, 0.7, 0.7),    // 2
-      new THREE.Vector3(0, 0.7, -0.7),   // 3
+    // Define faces (indices)
+    const indices = [
+      // Top triangular faces
+      0, 8, 2,    1, 9, 2,    0, 3, 10,    1, 3, 11,
       
-      // Bottom square vertices normals (pointing down and outward)
-      new THREE.Vector3(0.7, -0.7, 0),   // 4
-      new THREE.Vector3(-0.7, -0.7, 0),  // 5
-      new THREE.Vector3(0, -0.7, 0.7),   // 6
-      new THREE.Vector3(0, -0.7, -0.7),  // 7
+      // Bottom triangular faces
+      8, 4, 6,    9, 6, 5,    10, 7, 4,    11, 5, 7,
       
-      // Middle square vertices normals (pointing outward)
-      new THREE.Vector3(0.7, 0, 0.7),    // 8
-      new THREE.Vector3(-0.7, 0, 0.7),   // 9
-      new THREE.Vector3(0.7, 0, -0.7),   // 10
-      new THREE.Vector3(-0.7, 0, -0.7),  // 11
+      // Middle square faces (split into triangles)
+      8, 0, 10,   10, 4, 8,   // Right square
+      9, 1, 11,   11, 5, 9,   // Left square
+      8, 6, 2,    2, 8, 9,    // Front square
+      10, 3, 7,   11, 7, 3,   // Back square
+      0, 2, 3,    3, 2, 1,    // Top square
+      4, 7, 6,    6, 7, 5     // Bottom square
     ];
 
-    // Normalize all normals
-    normals.forEach(normal => normal.normalize());
+    // Calculate face normals
+    const normalsArray = new Float32Array(vertices.length * 3);
+    
+    // Process each triangle face
+    for (let i = 0; i < indices.length; i += 3) {
+      const idx1 = indices[i];
+      const idx2 = indices[i + 1];
+      const idx3 = indices[i + 2];
 
-    // Convert normals to flat array
-    const normalsArray = new Float32Array(normals.length * 3);
-    normals.forEach((normal, i) => {
-      normalsArray[i * 3] = normal.x;
-      normalsArray[i * 3 + 1] = normal.y;
-      normalsArray[i * 3 + 2] = normal.z;
-    });
+      const v1 = vertices[idx1];
+      const v2 = vertices[idx2];
+      const v3 = vertices[idx3];
+
+      // Calculate face normal using cross product
+      const edge1 = new THREE.Vector3().subVectors(v2, v1);
+      const edge2 = new THREE.Vector3().subVectors(v3, v1);
+      const normal = new THREE.Vector3().crossVectors(edge1, edge2).normalize();
+
+      // Apply the same normal to all three vertices of this face
+      [idx1, idx2, idx3].forEach(idx => {
+        normalsArray[idx * 3] = normal.x;
+        normalsArray[idx * 3 + 1] = normal.y;
+        normalsArray[idx * 3 + 2] = normal.z;
+      });
+    }
 
     // Set attributes
     geometry.setAttribute('position', new THREE.BufferAttribute(verticesArray, 3));
